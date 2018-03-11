@@ -1,3 +1,9 @@
+# Group Network need some Carry
+#       58070501006 Karntawan   Udomluksopin
+#       58070501046 Peerakit    Boonkittiporn
+#       58070501054 Methawat    Thanapairin
+#       58070501069 Sirapong    Phoosawan
+ 
 from socket import * 
 import sys
 
@@ -6,45 +12,33 @@ SERV_PORT = 50000
 
 addr = ('127.0.0.1', SERV_PORT)     # Server socket address 
 s = socket(AF_INET, SOCK_DGRAM)  # Create UDP socket
-s.connect(addr)
+s.connect(addr) #Socket Connected to Server
 
-topic = ''
-data = ''
-
-
+topic = ''  #set topic is null
+data = ''   #set data is null
+print ('----- Publisher is started -----')
 while(1):
     command = input('Insert your command <topic/publish/cancel> : ')
-    commander , line = command.split(" ")
+    commander , line = command.split(" ")   #split command input and keep command to commander, keep data in line
 
-    
+    if(commander == 'cancel' and line == topic):    #check command is cancel and topic is same 
+        print('\tTopic ' +topic+' is Cancel \n')    #print topic is cancel
+        topic = ''  #reset topic is null
+        data = ''   #reset data is null
+        txtout = 'pub,'+topic+','+data+','+commander    #Pattern data for send to server
+        s.sendto(txtout.encode('utf-8'), addr)  #Convert to byte type and send to server
 
-    if(commander == 'cancel' and line == topic):
-        print('\t\n' +topic+' is Cancel \n')
-        topic = ''
-        data = ''
-        txtout = 'pub,'+topic+','+data+','+commander
-        print(txtout)
-        s.sendto(txtout.encode('utf-8'), addr)
-    elif(commander == 'cancel' and line != topic):
-        print('Topic Invalid')
+    elif(commander == 'cancel' and line != topic):  #check command is cancel but topic is not same
+        print('\tTopic Invalid Input \n')   #show message invalid input topic
 
     else:
-       if(commander == 'topic'):
-           topic = line # text for prompt
-           print(topic)
+       if(commander == 'topic'):    
+           topic = line     #set topic is line variable
+           print('\tTopic is > '+topic+'\n') #print topic
        if(commander == 'publish'):
-        #sys.stdout.flush()
-        #txtout =  sys.stdin.readline().strip() # Take input from user keyboard
-           data = line
-           print(topic+' > '+data)
-           txtout = 'pub,'+topic+','+data+','+commander
-           print(txtout)
-           s.sendto(txtout.encode('utf-8'), addr) # Convert to byte type and send
+           data = line  #set data is line variable
+           print('\t'+topic+' > '+data+'\n') # print data
+           txtout = 'pub,'+topic+','+data+','+commander #Pattern data for send to server
+           s.sendto(txtout.encode('utf-8'), addr) #Convert to byte type and send to server
 
-
-    #while(1):
-        #print('%s> ' %(topic), end='') # Print the prompt
-        
-        #modifiedMsg, srvAddr = s.recvfrom(2048) # Wait for modified text from the server
-        #print (modifiedMsg.decode('utf-8'))     # Print the modified text.
 s.close()
